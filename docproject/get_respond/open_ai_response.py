@@ -60,7 +60,7 @@ import textwrap
 
 import google.generativeai as genai
 
-genai.configure(api_key="AIzaSyDff2HDRSoVlPERWuU1_XEVI7cOenCS378")
+genai.configure(api_key="")
 model = genai.GenerativeModel('gemini-pro')
 response = model.generate_content('write a morale story : unity is strength')
 
