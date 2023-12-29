@@ -2,3 +2,4 @@
 *.jpg
 *.txt
 __pycache__/
+!docproject/requirements.txt
