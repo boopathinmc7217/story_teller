@@ -1,55 +1,66 @@
-from django.shortcuts import render
-import json
-import requests
-from pathlib import Path
 from .open_ai_response import Generate
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.models import User
+from django.contrib import auth
+from django.contrib.auth.decorators import login_required
 
 
+@login_required
 @csrf_exempt
 def get_story(request) -> HttpResponse | None:
     if request.method == "POST":
         binary_data = request.POST.get("story_for", b"")
         text_story = Generate().generate_story(binary_data)
         audio_story = Generate().generate_sound(text_story)
-        with open(audio_story, 'rb') as audio_file:
+        with open(audio_story, "rb") as audio_file:
             audio_data = audio_file.read()
-        content_type = 'audio/mp3'
+        content_type = "audio/mp3"
         response = HttpResponse(audio_data, content_type=content_type)
         return response
 
 
-def combined_response(audio_path, image_path):
-    # Read image data
-    with open(image_path, "rb") as image_file:
-        image_data = image_file.read()
+@csrf_exempt
+def register(request) -> HttpResponse | None:
+    if request.method == "POST":
+        user_name = request.POST.get("user_name")
+        password = request.POST.get("password")
+        confirm_password = request.POST.get("confirm_password")
+        email = request.POST.get("email")
+        if confirm_password == password:
+            if User.objects.filter(email=email).exists():
+                return HttpResponse("Email already exisits")
+            elif User.objects.filter(username=user_name).exists():
+                return HttpResponse("Username already taken")
+            else:
+                user_obj = User.objects.create_user(
+                    username=user_name, email=email, password=password
+                )
+                user_obj.save()
+                return HttpResponse("user created successfully")
+        else:
+            return HttpResponse("Password Doesnot match")
+    else:
+        return HttpResponse("Nothing please sit tight")
 
-    # Read audio data
-    with open(audio_path, "rb") as audio_file:
-        audio_data = audio_file.read()
 
-    # Set content types
-    image_content_type = "image/jpeg"
-    audio_content_type = "audio/mp3"
+@csrf_exempt
+def login(request):
+    user_authentication = auth.authenticate(
+        request=request,
+        username=request.POST.get("user_name"),
+        password=request.POST.get("password"),
+    )
+    if user_authentication:
+        auth.login(request, user_authentication)  # Log the user in.
+        response = HttpResponse("User auth successful")
+        # Set a cookie on the response
+        response.set_cookie("logged_in", "True")
+        return response
+    else:
+        return HttpResponse("User auth failed")
 
-    # Set response headers
-    response = HttpResponse(content_type="multipart/mixed")
-    response["Content-Disposition"] = "inline; filename=combined_response"
 
-    # Add image data to the response
-    response.write(
-        f"--boundary\r\nContent-Type: {image_content_type}\r\n\r\n".encode())
-    response.write(image_data)
-    response.write(b"\r\n")
-
-    # Add audio data to the response
-    response.write(
-        f"--boundary\r\nContent-Type: {audio_content_type}\r\n\r\n".encode())
-    response.write(audio_data)
-    response.write(b"\r\n")
-
-    # Add boundary for the end of the response
-    response.write(b"--boundary--")
-
-    return response
+def logout(request):
+    auth.logout(request=request)
+    return HttpResponse("You have been logged out.")
