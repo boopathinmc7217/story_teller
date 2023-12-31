@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Interactive Prompt</title>
+    <style>
+        /* Disable right-click context menu for the audio element */
+        audio {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+    </style>
+</head>
+<body>
+    {% if audio_data %}
+        <h2>Story Player</h2>
+        <audio controls>
+            <source src="data:audio/mp3;base64,{{ audio_data }}" type="audio/mp3">
+            Your browser does not support the audio tag.
+        </audio>
+    {% else %}
+        <h2>Enter Your Prompt</h2>
+        <form action="get_story" method="post">
+            {% csrf_token %}
+            <label for="prompt">Prompt (max 150 characters):</label><br>
+            <input type="text" id="prompt" name="prompt" maxlength="150" required><br>
+            <input type="submit" value="Submit">
+        </form>
+    {% endif %}
+</body>
+</html>

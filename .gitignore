@@ -4,4 +4,7 @@
 __pycache__/
 !/requirements.txt
 .vsode/
-.mp3
+*.mp3
+*.pdf
+directed-radius*.json
+cred_config.json
