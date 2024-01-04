@@ -1,10 +1,11 @@
 import datetime
 import json
 import os
-
+script_directory = os.path.dirname(os.path.realpath(__file__))
+json_file_name = "directed-radius-409718-d0d03a8a1400.json"
 os.environ[
     "GOOGLE_APPLICATION_CREDENTIALS"
-] = "directed-radius-409718-d0d03a8a1400.json"
+] =  os.path.join(script_directory, json_file_name)
 from google.cloud import storage
 
 CILENT = storage.Client()

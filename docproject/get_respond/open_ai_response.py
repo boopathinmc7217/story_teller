@@ -12,7 +12,7 @@ class Generate:
 
     def _load_api_key_from_json(self):
         script_directory = os.path.dirname(os.path.abspath(__file__))
-        file_path = os.path.join(script_directory, "cred.config.json")
+        file_path = os.path.join(script_directory, "cred_config.json")
         with open(file_path, "r") as file:
             config = json.load(file)
         return config.get("openai_api_key")
