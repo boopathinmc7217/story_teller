@@ -1,5 +1,4 @@
 import base64
-from calendar import c
 from multiprocessing.managers import BaseManager
 from django.shortcuts import redirect, render
 
@@ -66,6 +65,7 @@ def register(request) -> HttpResponse | None:
         return render(request=request, template_name="signup.html")
 
 
+
 @csrf_exempt
 def login(
     request,
@@ -83,7 +83,7 @@ def login(
         if user_authentication:
             auth.login(request, user_authentication)
             response = HttpResponse("User auth successful")
-            response.set_cookie("logged_in", "True",max_age=1800 )
+            response.set_cookie("logged_in", "True", max_age=1800 )
             return redirect("/my_stories")
         else:
             return HttpResponse("User auth failed")
