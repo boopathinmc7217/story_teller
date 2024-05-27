@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Stories</title>
+</head>
+<body>
+    <h2>Stories</h2>
+    <ul>
+        {% for story in stories %}
+        {% csrf_token %}
+            <li><a href="{% url 'story_url' story.id %}">{{ story.topic }}</a></li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
